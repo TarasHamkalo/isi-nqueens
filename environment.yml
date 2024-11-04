@@ -1,0 +1,7 @@
+name: isi-nqueens
+channels:
+  - defaults
+  - conda-forge
+  - anaconda
+dependencies:
+  - python
