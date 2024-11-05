@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Problem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1 style="text-align: center;">N-Queens Problem Visualizer</h1>
+<div class="container">
+    <div class="controls controls-left">
+        <button id="solveButton">Solve</button>
+        <button id="solveButton1">Solve</button>
+        <button id="solveButton2">Solve</button>
+    </div>
+
+    <div id="board" class="board"></div>
+
+    <div class="controls controls-right">
+        <div class="one-step-button">
+            <button id="backwardButton"><<</button>
+            <button id="forwardButton">>></button>
+        </div>
+        <button id="a">Another button</button>
+    </div>
+</div>
+
+<script>
+    const N = 8;
+    let actualStep = 0;
+    let solutionSteps = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const board = document.getElementById('board');
+        board.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+        initBoard(board);
+        defineQueen();
+
+        document.getElementById('solveButton').addEventListener('click', () => {
+            setSolutionSteps();
+        });
+
+        document.getElementById('forwardButton').addEventListener('click', () => {
+            if (actualStep < solutionSteps.length) {
+                queenToggle(solutionSteps[actualStep][0], solutionSteps[actualStep][1]);
+                actualStep++;
+            }
+        });
+
+        document.getElementById('backwardButton').addEventListener('click', () => {
+            if (actualStep > 0) {
+                actualStep--;
+                queenToggle(solutionSteps[actualStep][0], solutionSteps[actualStep][1]);
+            }
+        });
+    });
+
+    function setSolutionSteps() {
+        solutionSteps = [
+            [1, 1],
+            [2, 2],
+            [2, 2],
+            [3, 3],
+        ];
+    }
+
+    function defineQueen() {
+        const queen_img = document.createElement("img");
+        queen_img.src = 'fig/queen.png';
+        queen_img.classList.add('queen');
+        queen_img.style.mixBlendMode = 'multiply';
+        return queen_img;
+    }
+
+    function initBoard(board) {
+        for (let i = 0; i < N * N; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell', (Math.floor(i / N) + i) % 2 === 0 ? 'white' : 'black');
+            board.appendChild(cell);
+        }
+    }
+
+    function queenToggle(row, col) {
+        const boardCells = document.querySelectorAll('.cell');
+        const queenIndex = row * N + col;
+        console.log(queenIndex)
+        if (boardCells[queenIndex].firstChild) {
+            boardCells[queenIndex].removeChild(boardCells[queenIndex].firstChild);
+        } else {
+            boardCells[queenIndex].appendChild(defineQueen());
+        }
+    }
+</script>
+
+</body>
+</html>
