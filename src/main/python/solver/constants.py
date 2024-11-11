@@ -1,0 +1,3 @@
+QUEEN = 1
+
+EMPTY = 0

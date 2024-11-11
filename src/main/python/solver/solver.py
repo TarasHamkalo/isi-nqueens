@@ -3,6 +3,16 @@ class Solver:
   def __init__(self, n: int):
     self.n = n
     self.board = [[0] * n ] * n
+    self.steps = [] #
+
+  def solve(self):
+    raise NotImplemented("Abstract")
+
+  def get_steps(self):
+    return self.steps
+
+  def reset(self):
+    self.board = [[0] * self.n ] * self.n
 
   def print_board(self):
     for i in range(self.n):
@@ -12,11 +22,3 @@ class Solver:
         else:
           print(".")
 
-  def solve(self):
-    raise NotImplemented("Abstract")
-
-  def reset(self):
-    self.board = [[0] * self.n ] * self.n
-
-  def get_board(self):
-    return self.board
