@@ -1,0 +1,88 @@
+body {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: #e0e0e0;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 36em;
+    border: 2px solid #555;
+    background-color: #333;
+}
+
+.cell {
+    display: flex;
+    width: 3em;
+    height: 3em;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    width: 16em;
+    padding: 1em;
+    margin-right: 3em;
+    margin-left: 3em;
+    font-size: 1em;
+    color: #e0e0e0;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #777;
+}
+
+.white {
+    background-color: #d1b28a;
+}
+
+#forwardButton, #backwardButton {
+    width: 7.5em;
+    margin: 0;
+}
+
+.one-step-button {
+    display: flex;
+    flex-direction: row;
+    margin-left: 3em;
+    gap: 1em;
+}
+
+.black {
+    background-color: #8b5e3c;
+}
+
+.queen {
+    width: 100%;
+    height: 100%;
+}
