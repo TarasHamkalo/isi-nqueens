@@ -25,9 +25,11 @@ class DfsBacktracking(Solver):
         continue
 
       self.board[i][j] = QUEEN
+      self.steps.append([i, j])
       if self.dfs(i + 1):
         return True
 
+      self.steps.append([i, j])
       self.board[i][j] = 0
 
     return False
@@ -57,5 +59,11 @@ class DfsBacktracking(Solver):
 
       if self.is_on_board(i - k, j - k):
         indexes.append([i - k, j - k])
+
+      if self.is_on_board(i - k, j + k):
+        indexes.append([i - k, j + k])
+
+      if self.is_on_board(i + k, j - k):
+        indexes.append([i + k, j - k])
 
     return indexes
