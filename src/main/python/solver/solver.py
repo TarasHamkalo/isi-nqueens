@@ -1,8 +1,12 @@
+import numpy
+import numpy as np
+
+
 class Solver:
 
   def __init__(self, n: int):
     self.n = n
-    self.board = [[0] * n ] * n
+    self.board: numpy.array = np.zeros((self.n, self.n), dtype=int)
     self.steps = [] #
 
   def solve(self):
@@ -12,13 +16,14 @@ class Solver:
     return self.steps
 
   def reset(self):
-    self.board = [[0] * self.n ] * self.n
+    self.board = np.zeros((self.n, self.n), dtype=int)
 
   def print_board(self):
     for i in range(self.n):
       for j in range(self.n):
         if self.board[i][j] == 1:
-          print("Q")
+          print("Q", end="")
         else:
-          print(".")
+          print(".", end="")
 
+      print("")
