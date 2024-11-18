@@ -17,6 +17,7 @@ class Solver:
 
   def reset(self):
     self.board = np.zeros((self.n, self.n), dtype=int)
+    self.steps = []
 
   def print_board(self):
     for i in range(self.n):

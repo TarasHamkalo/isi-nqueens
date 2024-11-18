@@ -9,7 +9,7 @@ from solver.solver import Solver
 class App:
 
   solvers: Dict[str, Solver] = {
-    'dfs': DfsBacktracking(4),
+    'dfs': DfsBacktracking(8),
   }
 
   def __init__(self):
