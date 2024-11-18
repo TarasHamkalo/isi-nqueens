@@ -5,25 +5,17 @@ from flask import Flask
 from solver.dfs_backtracking import DfsBacktracking
 from solver.solver import Solver
 
-flask = Flask(__name__)
 
 class App:
 
   solvers: Dict[str, Solver] = {
-    'dfs-backtracking': DfsBacktracking(4),
+    'dfs': DfsBacktracking(4),
   }
 
   def __init__(self):
-    self.solver: Solver = self.solvers['dfs-backtracking']
+    self.solver: Solver = self.solvers['dfs']
 
-  def set_solver(self, solver_name):
-    self.solver = self.solvers[solver_name]
-
-  def solve(self):
-    self.solver.solve()
-
-  def get_steps(self):
-    return self.get_steps()
-
-  def reset(self):
+  def get_steps(self, solver_name: str):
     self.solver.reset()
+    self.solver.solve()
+    return self.solver.get_steps()
