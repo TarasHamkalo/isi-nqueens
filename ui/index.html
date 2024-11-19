@@ -50,7 +50,8 @@
     let playbackSpeed = 1000;
 
     const Methods = {
-        DFS: 'dfs'
+        DFS: 'dfs',
+        FORWARD_CHECKING: 'forwardchecking'
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -61,7 +62,7 @@
 
         document.getElementById('solveButton').addEventListener('click', () => {
             resetBoard();
-            setSolutionSteps(Methods.DFS);
+            setSolutionSteps(Methods.FORWARD_CHECKING);
         });
 
         document.getElementById('forwardButton').addEventListener('click', () => {

@@ -6,8 +6,8 @@ class Solver:
 
   def __init__(self, n: int):
     self.n = n
-    self.board: numpy.array = np.zeros((self.n, self.n), dtype=int)
-    self.steps = [] #
+    self.board: numpy.array = self.initialize_board()
+    self.steps = []
 
   def solve(self):
     raise NotImplemented("Abstract")
@@ -28,3 +28,6 @@ class Solver:
           print(".", end="")
 
       print("")
+
+  def initialize_board(self) -> numpy.array:
+    return np.zeros((self.n, self.n), dtype=int)

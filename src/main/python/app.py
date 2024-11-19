@@ -4,12 +4,14 @@ from flask import Flask
 
 from solver.dfs_backtracking import DfsBacktracking
 from solver.solver import Solver
+from src.main.python.solver.forward_checking import ForwardChecking
 
 
 class App:
 
   solvers: Dict[str, Solver] = {
     'dfs': DfsBacktracking(8),
+    'forwardchecking': ForwardChecking(4),
   }
 
   def __init__(self):
