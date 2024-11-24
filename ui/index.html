@@ -11,10 +11,10 @@
 <h1 style="text-align: center;">N-Queens Problem Visualizer</h1>
 <div class="container">
 
-    <div class="controls controls-left">
-        <button id="solveButton">Solve</button>
-        <button id="solveButton1">Solve</button>
-        <button id="solveButton2">Solve</button>
+    <div id="solver-pickers" class="controls controls-left">
+<!--        <button id="solveButton">DFS</button>-->
+<!--        <button id="solveButton1">Backtracking</button>-->
+<!--        <button id="solveButton2">Forward checking</button>-->
     </div>
 
     <div>
@@ -50,8 +50,10 @@
     let playbackSpeed = 1000;
 
     const Methods = {
-        DFS: 'dfs',
-        FORWARD_CHECKING: 'forwardchecking'
+        DFS: { value: 'dfs', publicName: 'Depth First Search' },
+        BACKTRACKING: { value: 'backtracking', publicName: 'Backtracking' },
+        FORWARD_CHECKING: { value: 'forwardchecking', publicName: 'Forward checking' },
+        MIN_MAX_CONFLICT: { value: 'minmax', publicName: 'Min-Max conflict' }
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -60,10 +62,18 @@
         initBoard(board);
         defineQueen();
 
-        document.getElementById('solveButton').addEventListener('click', () => {
-            resetBoard();
-            setSolutionSteps(Methods.FORWARD_CHECKING);
-        });
+        const solverPickers  = document.getElementById('solver-pickers')
+        for (const [key, {value, publicName}] of Object.entries(Methods)) {
+            const button = document.createElement('button');
+            button.textContent = `Solve using ${publicName}`;
+            button.id = `solve${key}`;
+            button.addEventListener('click', () => {
+                resetBoard();
+                setSolutionSteps(value);
+            })
+
+            solverPickers.appendChild(button)
+        }
 
         document.getElementById('forwardButton').addEventListener('click', () => {
             stepForward();
