@@ -10,6 +10,7 @@ app = App()
 def handle_bad_request(e: Exception):
   return str(e), 400
 
+#TODO: update api to return final queen positions
 @flask.route('/board/<string:solver_name>/solve', methods=['GET'])
 @cross_origin(origin='*', headers=['Content-Type','Authorization'])
 def get_steps(solver_name: str):
