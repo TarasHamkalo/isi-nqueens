@@ -36,7 +36,8 @@ class ForwardChecking(Solver):
             self.board[row][column] = QUEEN
             self.steps.append([row, column])
 
-            new_domains = self.domain_manager.set_placed(domains, row)
+            new_domains = copy.deepcopy(domains)
+            new_domains = self.domain_manager.set_placed(new_domains, row)
             new_domains = self.domain_manager.all_constraints(new_domains, row, column)
 
             if self.__solve(new_domains):
