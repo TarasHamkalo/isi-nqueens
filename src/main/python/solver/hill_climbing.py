@@ -1,8 +1,6 @@
 import random
 from typing import List
 
-import numpy as np
-
 from solver.constants import QUEEN, EMPTY
 from solver.solver import Solver
 
@@ -17,17 +15,12 @@ class Neighbor:
         self.heuristic_score: int = heuristic_score
 
 class HillClimbing(Solver):
-
     def __init__(self, n):
         super().__init__(n)
-        # self.queens = {i: Domain(self.n) for i in range(self.n)}
-        self.queens = [-1] * self.n # track which queen and where (row: col)
-        self.columns = [0] * self.n # track number of queens in each column
-        self.diag = [0] * (2 * self.n - 1) # track number of queens in each main diagonals
-        self.anti_diag = [0] * (2 * self.n - 1) # track number of queens in each reverse diagonal
-        # self.columns = {i: 0 for i in range(n)}
-        # self.diag = {i: 0 for i in range(n)}
-        # self.anti_diag = {i: 0 for i in range(n)}
+        self.queens = [-1] * self.n  # track which queen and where (row: col)
+        self.columns = [0] * self.n  # track number of queens in each column
+        self.diag = [0] * (2 * self.n - 1)  # track number of queens in each main diagonals
+        self.anti_diag = [0] * (2 * self.n - 1)  # track number of queens in each reverse diagonal
         self.post_init()
 
     def post_init(self):
@@ -43,37 +36,35 @@ class HillClimbing(Solver):
         current_score = self.get_number_of_attacking_queens()
         for i in range(limit):
             neighbors = self.get_neighbors()
-            print(len(neighbors))
+
+            print(f"Iteration {i}: Evaluating neighbors...")
             best_neighbor: Neighbor = min(neighbors, key=lambda n: n.heuristic_score)
-            print(f"Best score is {best_neighbor.heuristic_score}. Move {best_neighbor.queen}: {best_neighbor.next_col}")
+            print(f"Best score is {best_neighbor.heuristic_score}. Move Queen {best_neighbor.queen} to Column {best_neighbor.next_col}")
+
             if best_neighbor.heuristic_score < current_score:
                 print(f"Updating score from {current_score} to {best_neighbor.heuristic_score}")
                 current_score = best_neighbor.heuristic_score
 
-                # tracking queen conflicts
+                # Update the queen's position
                 self._remove_queen(best_neighbor.queen)
                 self._put_queen(best_neighbor.queen, best_neighbor.next_col)
 
-                # board update
+                # Update the board
                 self.board[best_neighbor.queen][best_neighbor.orig_col] = EMPTY
                 self.board[best_neighbor.queen][best_neighbor.next_col] = QUEEN
 
-                # steps record
+                # Record steps
                 self.steps.append((best_neighbor.queen, best_neighbor.orig_col))
                 self.steps.append((best_neighbor.queen, best_neighbor.next_col))
-
-            if current_score == best_neighbor.heuristic_score:
-                print('Score can not be updated')
+            else:
+                print("No improvement possible. Stopping.")
                 return
 
     def _put_queen(self, queen: int, col: int) -> bool:
-        # puts queen on given column, updates counts for heuristic calculation
         self.queens[queen] = col
-
         self.columns[col] += 1
         self.diag[queen - col + self.n - 1] += 1
         self.anti_diag[queen + col] += 1
-        # TODO: should be counted here... attacking
         return True
 
     def _remove_queen(self, queen: int) -> bool:
@@ -82,16 +73,12 @@ class HillClimbing(Solver):
             return False
 
         self.queens[queen] = -1
-
         self.columns[col] -= 1
         self.diag[queen - col + self.n - 1] -= 1
         self.anti_diag[queen + col] -= 1
-
         return True
 
     def get_neighbors(self) -> List[Neighbor]:
-        # для кожного могжливого руху королеви в рядку, порахуй еврестичний скор
-        # та додай до листа
         neighbors: List[Neighbor] = []
         for queen, orig_col in enumerate(self.queens):
             for next_col in range(self.n):
@@ -100,34 +87,24 @@ class HillClimbing(Solver):
 
                 self._remove_queen(queen)
                 self._put_queen(queen, next_col)
-                heuristic_score = self.get_number_of_attacking_queens() # TODO: reverse, to penalize
+                heuristic_score = self.get_number_of_attacking_queens()
 
-                neighbor = Neighbor(
+                neighbors.append(Neighbor(
                     queen=queen,
                     orig_col=orig_col,
                     next_col=next_col,
                     heuristic_score=heuristic_score
-                )
-                neighbors.append(neighbor)
+                ))
 
-            # put the queen back
-            self._remove_queen(queen)
-            self._put_queen(queen, orig_col)
+                # Restore the original position
+                self._remove_queen(queen)
+                self._put_queen(queen, orig_col)
 
         return neighbors
 
     def get_number_of_attacking_queens(self) -> int:
-        # n * (n - 1) / 2 (for queens in col, diag and antidiag)
-        col_attacking_queens = 0
-        for queens in self.columns:
-            col_attacking_queens += queens * (queens - 1) // 2
-
-        diagonal_attacking_queens = 0
-        for queens in self.diag:
-            diagonal_attacking_queens += queens * (queens - 1) // 2
-
-        anti_diagonal_attacking_queens = 0
-        for queens in self.anti_diag:
-            anti_diagonal_attacking_queens += queens * (queens - 1) // 2
-
-        return col_attacking_queens + diagonal_attacking_queens + anti_diagonal_attacking_queens
+        # taking 2 from n = n * (n - 1) / 2 (for queens in col, diag and antidiag)
+        col_attacking_queens = sum(q * (q - 1) // 2 for q in self.columns)
+        diag_attacking_queens = sum(q * (q - 1) // 2 for q in self.diag)
+        anti_diag_attacking_queens = sum(q * (q - 1) // 2 for q in self.anti_diag)
+        return col_attacking_queens + diag_attacking_queens + anti_diag_attacking_queens
