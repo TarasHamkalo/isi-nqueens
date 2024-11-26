@@ -18,8 +18,11 @@ class Solver:
         return self.steps
 
     def reset(self):
-        self.board = np.zeros((self.n, self.n), dtype=int)
+        self.board = self.initialize_board()
         self.steps = []
+
+    def initialize_board(self) -> numpy.array:
+        return np.zeros((self.n, self.n), dtype=int)
 
     def print_board(self):
         for i in range(self.n):
@@ -30,9 +33,6 @@ class Solver:
                     print(".", end="")
 
             print("")
-
-    def initialize_board(self) -> numpy.array:
-        return np.zeros((self.n, self.n), dtype=int)
 
     def is_on_board(self, i, j) -> bool:
         return 0 <= i < self.n and 0 <= j < self.n
