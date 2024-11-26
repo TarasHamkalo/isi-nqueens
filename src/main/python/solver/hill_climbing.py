@@ -39,7 +39,11 @@ class HillClimbing(Solver):
 
             print(f"Iteration {i}: Evaluating neighbors...")
             best_neighbor: Neighbor = min(neighbors, key=lambda n: n.heuristic_score)
-            print(f"Best score is {best_neighbor.heuristic_score}. Move Queen {best_neighbor.queen} to Column {best_neighbor.next_col}")
+            print(f"Best score is {best_neighbor.heuristic_score}."
+                  f" Move Queen {best_neighbor.queen} to Column {best_neighbor.next_col}")
+
+            self.print_board()
+            self.print_neighbors(neighbors)
 
             if best_neighbor.heuristic_score < current_score:
                 print(f"Updating score from {current_score} to {best_neighbor.heuristic_score}")
@@ -59,6 +63,13 @@ class HillClimbing(Solver):
             else:
                 print("No improvement possible. Stopping.")
                 return
+
+    def print_neighbors(self, neighbors):
+        for i, neighbor in enumerate(neighbors):
+            print(neighbor.heuristic_score, end=" ")
+            if (i + 1) % (self.n - 1) == 0:
+                print()
+        print()
 
     def _put_queen(self, queen: int, col: int) -> bool:
         self.queens[queen] = col
@@ -85,6 +96,7 @@ class HillClimbing(Solver):
                 if orig_col == next_col:
                     continue
 
+                print(f"Move queen {queen} from {orig_col} to {next_col}")
                 self._remove_queen(queen)
                 self._put_queen(queen, next_col)
                 heuristic_score = self.get_number_of_attacking_queens()
@@ -107,4 +119,8 @@ class HillClimbing(Solver):
         col_attacking_queens = sum(q * (q - 1) // 2 for q in self.columns)
         diag_attacking_queens = sum(q * (q - 1) // 2 for q in self.diag)
         anti_diag_attacking_queens = sum(q * (q - 1) // 2 for q in self.anti_diag)
+        print("Columns:", self.columns, "Attacks:", col_attacking_queens)
+        print("Diagonals:", self.diag, "Attacks:", diag_attacking_queens)
+        print("Anti-diagonals:", self.anti_diag, "Attacks:", anti_diag_attacking_queens)
+
         return col_attacking_queens + diag_attacking_queens + anti_diag_attacking_queens
