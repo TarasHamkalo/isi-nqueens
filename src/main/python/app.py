@@ -46,3 +46,10 @@ class App:
 
     def get_queens(self):
         return self.solver.get_queens()
+
+    def set_limit(self, limit):
+        self.solvers['minmax'].limit = limit
+        self.solvers['hillclimbing'].limit = limit
+
+    def set_side_moves(self, side_moves):
+        self.solvers['hillclimbing'].side_moves = side_moves

@@ -1,6 +1,6 @@
 import logging
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import cross_origin
 
 from app import App
@@ -28,6 +28,19 @@ def get_steps(solver_name: str):
         "solveDuration": duration,
         "nodesExpanded": nodes_expanded
     }
+
+@flask.route('/board/solvers/setup', methods=['POST'])
+@cross_origin(origin='*', headers=['Content-Type','Authorization'])
+def setup():
+    print(request.args)
+    limit = request.args.get('limit', type=int)
+    side_moves = request.args.get('side_moves', type=int)
+    if limit is None or side_moves is None:
+        raise ValueError('Limit and side moves required')
+
+    app.set_limit(limit)
+    app.set_side_moves(side_moves)
+    return 'ok'
 
 @flask.route('/board/queens', methods=['GET'])
 @cross_origin()
