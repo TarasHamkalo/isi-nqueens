@@ -76,7 +76,7 @@ button:hover {
     margin-top: 1em;
 }
 
-#playbackSpeed {
+.input--field {
     width: 6em;
     padding: 0.5em;
     font-size: 1em;
@@ -168,4 +168,31 @@ button:disabled {
 .gray-value {
   color: #222;
   font-weight: bold;
+}
+
+.limit--input {
+    margin-left: 3em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+#sideMoves {
+    width: 9em;
+    margin-left: 1.8em;
+}
+
+#limit {
+    width: 9em;
+    margin-left: 5em;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Для Firefox */
 }

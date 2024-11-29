@@ -12,9 +12,16 @@
 <div class="container">
 
     <div id="solver-pickers" class="controls controls-left">
-<!--        <button id="solveButton">DFS</button>-->
-<!--        <button id="solveButton1">Backtracking</button>-->
-<!--        <button id="solveButton2">Forward checking</button>-->
+        <div class="limit--input">
+            <form id="limitForm" action="#" onsubmit="return false;">
+                <label for="limit">Limit</label><input class="input--field" type="number" id="limit" name="limit"
+                                                  placeholder="5000" min="1" max="10000">
+            </form>
+            <form id="sideMovesForm" action="#" onsubmit="return false;">
+                <label for="sideMoves">Side moves</label><input class="input--field" type="number" id="sideMoves" name="sideMoves"
+                                                      placeholder="5" min="1" max="100">
+            </form>
+        </div>
     </div>
 
     <div>
@@ -37,23 +44,21 @@
             </div>
         </div>
 
-        <div class="controls controls-right">
-            <div class="one-step-button">
-                <button id="backwardButton"><<</button>
-                <button id="forwardButton">>></button>
-            </div>
-            <button id="showResult">Final queens positions</button>
-            <button id="runButton">Play</button>
-
-            <form id="playbackSpeedForm" action="#" onsubmit="setPlaybackSpeed(event)">
-                <label for="playbackSpeed">Playback speed:</label>
-                <div style="display: inline-flex; align-items: center;">
-                    <input type="text" id="playbackSpeed" name="playbackSpeed" placeholder="1000">
-                    <span style="margin-left: 8px;">ms</span>
-                </div>
-            </form>
-
+    <div class="controls controls-right">
+        <div class="one-step-button">
+            <button id="backwardButton"><<</button>
+            <button id="forwardButton">>></button>
         </div>
+        <button id="showResult">Final queens positions</button>
+        <button id="runButton">Play</button>
+
+        <form id="playbackSpeedForm" action="#" onsubmit="return false;">
+            <label for="playbackSpeed">Playback speed:</label>
+            <div style="display: inline-flex; align-items: center;">
+                <input class="input--field" type="number" id="playbackSpeed" name="playbackSpeed" placeholder="1000" min="0" max="1">
+                <span style="margin-left: 8px;">ms</span>
+            </div>
+        </form>
 
     </div>
 </div>
@@ -65,6 +70,8 @@
     let isRun = false;
     let stepInterval;
     let playbackSpeed = 1000;
+    let limit = 5000;
+    let sideMoves = 5;
 
     const Methods = {
         DFS: { value: 'dfs', publicName: 'Depth First Search' },
@@ -124,7 +131,7 @@
                 .then((response) => response.json().then(responseSteps => {
                     console.log(responseSteps)
                     responseSteps.forEach((q, c) => queenToggle(c, q))
-                    actualStep = solutionSteps.length - 1
+                    actualStep = solutionSteps.length
                 }))
                 .then(() => loadingElement.style.display = 'none');
         }
@@ -133,11 +140,38 @@
             event.preventDefault();
 
             if (event.deltaY < 0) {
-                playbackSpeed += 50;
+                playbackSpeed = parseInt(playbackSpeed) + 50;
             } else {
                 playbackSpeed = Math.max(0, playbackSpeed - 50);
             }
-            document.getElementById("playbackSpeed").value = playbackSpeed;
+            document.getElementById("playbackSpeed").placeholder = playbackSpeed;
+        });
+
+        document.getElementById("playbackSpeedForm").addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const input = document.getElementById("playbackSpeed");
+            playbackSpeed = input.value;
+            input.placeholder = playbackSpeed;
+            input.value = '';
+        });
+
+        document.getElementById("sideMovesForm").addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const input = document.getElementById("sideMoves");
+            sideMoves = input.value;
+            input.placeholder = sideMoves
+            input.value = '';
+        });
+
+        document.getElementById("limitForm").addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const input = document.getElementById("limit");
+            limit = input.value;
+            input.placeholder = limit
+            input.value = '';
         });
 
         document.getElementById('runButton').addEventListener('click', () => {
@@ -150,12 +184,6 @@
             }
         });
     });
-
-    function setPlaybackSpeed(event) {
-        event.preventDefault();
-        playbackSpeed = document.getElementById("playbackSpeed").value
-        document.getElementById("playbackSpeed").value = playbackSpeed;
-    }
 
     function safeStepForward() {
         if (actualStep >= solutionSteps.length) {
@@ -197,6 +225,12 @@
     const setSolutionSteps = async (method) => {
         const loadingElement = document.getElementById('loading');
         loadingElement.style.display = 'block';
+        await fetch(`http://localhost:5000//board/solvers/setup?limit=${encodeURIComponent(limit)}&side_moves=${encodeURIComponent(sideMoves)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
         await fetch(`http://localhost:5000/board/${method}/solve`, {
             method: 'GET',
             headers: {
