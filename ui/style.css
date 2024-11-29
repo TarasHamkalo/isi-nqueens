@@ -130,3 +130,17 @@ button:hover {
     text-align: center;
     z-index: 1000;
 }
+
+/* Style for hover on enabled buttons */
+button:not(:disabled):hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+
+/* Style for disabled buttons */
+button:disabled {
+    background-color: #cccccc; /* Gray background */
+    color: #666666;           /* Muted text color */
+    cursor: not-allowed;      /* Show not-allowed cursor */
+    border: 1px solid #999;   /* Muted border */
+    opacity: 0.6;             /* Slight transparency */
+}

@@ -31,6 +31,7 @@
         </div>
         <button id="showResult">Final queens positions</button>
         <button id="runButton">Play</button>
+
         <form id="playbackSpeedForm" action="#" onsubmit="setPlaybackSpeed(event)">
             <label for="playbackSpeed">Playback speed:</label>
             <div style="display: inline-flex; align-items: center;">
@@ -107,7 +108,8 @@
             })
                 .then((response) => response.json().then(responseSteps => {
                     console.log(responseSteps)
-                    responseSteps.forEach((q, c) => queenToggle(q, c))
+                    responseSteps.forEach((q, c) => queenToggle(c, q))
+                    actualStep = solutionSteps.length - 1
                 }))
                 .then(() => loadingElement.style.display = 'none');
         }
