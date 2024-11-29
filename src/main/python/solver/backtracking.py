@@ -11,10 +11,10 @@ class Backtracking(Solver):
     def solve(self):
         queens = [-1] * self.n
         self._solve(queens)
-        print(queens)
-        print(self.nodes_expanded)
+        logging.info(queens)
+        logging.debug(self.nodes_expanded)
 
-    def _solve(self, queens: List[int]):
+    def _solve(self, queens: List[int]) -> bool:
         if all(queen != -1 for queen in queens):
             return True
 
@@ -33,6 +33,8 @@ class Backtracking(Solver):
                 return True
 
             queens[queen] = -1
+
+        return False
 
     def select_queen_mrv(self, queens) -> int:
         # для кожної королеви перевір скільки існує варіантів розстановки
@@ -80,18 +82,27 @@ class Backtracking(Solver):
         return True
 
     def order_domain_with_lcv(self, queens, queen):
-        # count how many cells will be locked by placing queen there
+        # return list(range(self.n))
         heuristic_scores = [-1] * self.n
         for col in range(self.n):
-            heuristic_scores[col] = self.count_locked(queens, queen, col)
+            # heuristic_scores[col] = self.count_locked(queens, queen, col) # 89
+            heuristic_scores[col] = self.count_remaining(queens, queen, col) # 39
 
         domain_with_scores = [(col, heuristic_scores[col]) for col in range(self.n)]
-        ordered_domain = [col for col, _ in sorted(domain_with_scores, key=lambda x: x[1])]
-        print(ordered_domain)
+        logging.debug(domain_with_scores)
+
+        # order ascending with heuristic
+        # ordered_domain = [col for col, _ in sorted(domain_with_scores, key=lambda x: x[1])]
+
+        # order in reverse to heuristic
+        ordered_domain = [col for col, _ in sorted(domain_with_scores, key=lambda x: -1 * x[1])]
+
         return ordered_domain
 
+
+    # count how many cells will be locked by placing queen there
     def count_locked(self, queens, queen, col) -> int:
-        cells_locked = self.n - 1 # init to whole column (this queen not counted)
+        cells_locked = self.n -1 # whole column
 
         # for diags <= self.n - 1
         diag = queen - col + self.n - 1 # diagonal on which this queen located
@@ -111,3 +122,20 @@ class Backtracking(Solver):
             cells_locked += self.n - abs((self.n - 1) - anti_diag) - 1
 
         return cells_locked
+
+    # count how many domain values are left for other variables
+    def count_remaining(self, queens, queen, col) -> int:
+        remaining_values = 0
+
+        # add queen temporarily
+        queens[queen] = col
+        # check how this placement affects other unassigned queens
+        for other in range(self.n):
+            if other == queen or queens[other] != -1:
+                continue
+
+            remaining_values += self.count_safe(queens, other)
+
+        # remove the temporary placement
+        queens[queen] = -1
+        return remaining_values
