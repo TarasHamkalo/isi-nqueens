@@ -1,3 +1,4 @@
+import time
 from typing import Dict
 
 from solver.backtracking import Backtracking
@@ -20,6 +21,7 @@ class App:
 
     def __init__(self):
         self.solver: Solver = self.solvers['dfs']
+        self.solve_duration: float = 0.0  # Store duration of solving
 
     def get_steps(self, solver_name: str):
         if solver_name not in self.solvers:
@@ -27,9 +29,17 @@ class App:
 
         self.solver = self.solvers[solver_name]
         self.solver.reset()
+
+        start_time = time.time()
         self.solver.solve()
+        end_time = time.time()
+        self.solve_duration = end_time - start_time
+
         print(f"{self.solver}: {self.solver.get_steps()}")
         return self.solver.get_steps()
+
+    def get_solve_duration(self):
+        return self.solve_duration
 
     def get_nodes_expanded(self):
         return self.solver.get_nodes_expanded()

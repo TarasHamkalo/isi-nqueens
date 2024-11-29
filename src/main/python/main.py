@@ -19,14 +19,19 @@ def handle_bad_request(e: Exception):
 @flask.route('/board/<string:solver_name>/solve', methods=['GET'])
 @cross_origin(origin='*', headers=['Content-Type','Authorization'])
 def get_steps(solver_name: str):
-  print(solver_name)
-  return app.get_steps(solver_name)
+    steps = app.get_steps(solver_name)
+    duration = app.get_solve_duration()
+    nodes_expanded = app.get_nodes_expanded()
+
+    return {
+        "steps": steps,
+        "solveDuration": duration,
+        "nodesExpanded": nodes_expanded
+    }
 
 @flask.route('/board/queens', methods=['GET'])
 @cross_origin()
 def get_queens():
-
-    print(app.get_queens())
     return app.get_queens()
 
 if __name__ == '__main__':
