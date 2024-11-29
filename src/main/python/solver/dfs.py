@@ -1,3 +1,5 @@
+from typing import List
+
 from solver.constants import QUEEN, EMPTY
 from solver.solver import Solver
 
@@ -7,6 +9,7 @@ class Dfs(Solver):
     def __init__(self, n: int):
         super().__init__(n)
         self.queens = []
+        self.nodes_expanded = 0
 
     def solve(self):
         # візьми як перший стан, перший рядок
@@ -19,6 +22,25 @@ class Dfs(Solver):
         # додай усіх сусідів та рекурсія
         self._solve(0)
 
+    def reset(self):
+        super().reset()
+        self.queens = []
+        self.nodes_expanded = 0
+
+    def get_queens(self) -> List[int]:
+        if len(self.queens) == 0:
+            raise ValueError("solve() method was not called")
+
+        queens = [-1] * self.n
+        for i, j in self.queens:
+            queens[i] = j
+        return queens
+
+    def get_nodes_expanded(self):
+        return self.nodes_expanded
+
+    # queens placed
+    # when all variables set -> check for consistency
     def _solve(self, i) -> bool:
         if i == self.n:
             # frontier can not be expanded, no other child nodes
@@ -26,6 +48,9 @@ class Dfs(Solver):
 
         for j in range(0, self.n):
             self.board[i][j] = QUEEN
+
+            self.nodes_expanded += 1
+
             self.queens.append((i, j))
             self.steps.append((i, j))
 

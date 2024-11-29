@@ -23,18 +23,38 @@ class HillClimbing(Solver):
         self.columns = [0] * self.n  # track number of queens in each column
         self.diag = [0] * (2 * self.n - 1)  # track number of queens in each main diagonals
         self.anti_diag = [0] * (2 * self.n - 1)  # track number of queens in each reverse diagonal
-        self.post_init()
         self.updates_count = 0
         self.solution_score = -1
+        self.limit = int(1e12)
+        self.side_moves = 100
+        self.post_init()
 
     def post_init(self):
         for row in range(self.n):
             col = random.randint(0, self.n - 1)
             self.board[row][col] = QUEEN
             self._put_queen(row, col)
+            # append steps to track start position
+            self.steps.append((row, col))
 
     def solve(self):
-        self._solve(limit=int(1e32), side_moves=100)
+        self._solve(self.limit, self.side_moves)
+
+    def get_queens(self) -> List[int]:
+        return self.queens
+
+    def get_nodes_expanded(self) -> int:
+        return self.updates_count
+
+    def reset(self):
+        super().reset()
+        self.queens = [-1] * self.n
+        self.columns = [0] * self.n
+        self.diag = [0] * (2 * self.n - 1)
+        self.anti_diag = [0] * (2 * self.n - 1)
+        self.updates_count = 0
+        self.solution_score = -1
+        self.post_init()
 
     def _solve(self, limit: int, side_moves: int):
         side_moves_copy = side_moves
@@ -85,23 +105,6 @@ class HillClimbing(Solver):
         self.steps.append((best_neighbor.queen, best_neighbor.next_col))
 
         return best_neighbor.heuristic_score
-
-    def reset(self):
-        super().reset()
-        self.queens = [-1] * self.n
-        self.columns = [0] * self.n
-        self.diag = [0] * (2 * self.n - 1)
-        self.anti_diag = [0] * (2 * self.n - 1)
-        self.post_init()
-        self.updates_count = 0
-        self.solution_score = -1
-
-    def print_neighbors(self, neighbors):
-        for i, neighbor in enumerate(neighbors):
-            print(neighbor.heuristic_score, end=" ")
-            if (i + 1) % (self.n - 1) == 0:
-                print()
-        print()
 
     def _put_queen(self, queen: int, col: int) -> bool:
         self.queens[queen] = col
@@ -156,3 +159,11 @@ class HillClimbing(Solver):
         logging.debug(f"Anti-diagonals:: {self.anti_diag}, attacks {anti_diag_attacking_queens}")
 
         return col_attacking_queens + diag_attacking_queens + anti_diag_attacking_queens
+
+    def print_neighbors(self, neighbors):
+        for i, neighbor in enumerate(neighbors):
+            print(neighbor.heuristic_score, end=" ")
+            if (i + 1) % (self.n - 1) == 0:
+                print()
+        print()
+

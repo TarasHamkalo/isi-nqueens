@@ -4,15 +4,30 @@ from typing import List
 from solver.solver import Solver
 
 class Backtracking(Solver):
+
     def __init__(self, n):
         super().__init__(n)
+        self.queens: List[int] | None = None
         self.nodes_expanded = 0
 
     def solve(self):
         queens = [-1] * self.n
         self._solve(queens)
-        logging.info(queens)
-        logging.debug(self.nodes_expanded)
+        self.queens = queens
+
+    def get_queens(self) -> List[int]:
+        if self.queens is None:
+            raise ValueError("solve() method was not called")
+
+        return self.queens
+
+    def get_nodes_expanded(self) -> int:
+        return self.nodes_expanded
+
+    def reset(self):
+        super().reset()
+        self.nodes_expanded = 0
+        self.queens = None
 
     def _solve(self, queens: List[int]) -> bool:
         if all(queen != -1 for queen in queens):
@@ -27,11 +42,13 @@ class Backtracking(Solver):
             if not self.is_safe(queens, queen, col):
                 continue
 
-            queens[queen] = col
             self.nodes_expanded += 1
+            self.steps.append((queen, col))
+            queens[queen] = col
             if self._solve(queens):
                 return True
 
+            self.steps.append((queen, col))
             queens[queen] = -1
 
         return False
