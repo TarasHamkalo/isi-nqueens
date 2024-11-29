@@ -16,7 +16,7 @@ class MinMaxConflict(Solver):
         self.domain_manager = DomainManager()
         self.nodes_expanded = 0
         self.queens: List[int] | None = None
-        self.limit = 50000
+        self.limit = 500
         self.post_init()
 
     def solve(self) -> None:
@@ -28,7 +28,7 @@ class MinMaxConflict(Solver):
         for row in range(self.n):
             column = random.randint(0, self.n - 1)
             self.board[row, column] = QUEEN
-            self.steps.append([row, column]) # steps which init the board
+            self.steps.append([row, column])  # steps which init the board
 
     def get_queens(self) -> List[int]:
         if self.queens is None:
@@ -51,7 +51,6 @@ class MinMaxConflict(Solver):
             row = self.select_row_with_conflict(domains)
             print(row)
             if row == -1:
-                self.queens = [domain.columns[0] for domain in domains]
                 return True
 
             for current_column in domains[row].columns:
@@ -64,6 +63,7 @@ class MinMaxConflict(Solver):
             self.nodes_expanded += 1
             self.board[row][column] = QUEEN
             self.steps.append([row, column])
+            self.queens = [int(domain.columns[0]) for domain in domains]
 
         return False
 
@@ -77,8 +77,10 @@ class MinMaxConflict(Solver):
         return random.choice(rows_with_conflicts) if rows_with_conflicts else -1
 
     def select_column_with_min_conflicts(self, domains: list[Domain], row: int) -> int:
+        columns = list(range(self.n))
+        random.shuffle(columns)
         return min(
-            list(range(self.n)),
+            columns,
             key=lambda column: self.domain_manager.count_conflicts(domains, row, column)
         )
 
