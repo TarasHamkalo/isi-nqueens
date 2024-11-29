@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import random
 
@@ -8,40 +10,62 @@ from src.main.python.model.domain import Domain
 
 
 class MinMaxConflict(Solver):
+
     def __init__(self, n: int):
         super().__init__(n)
         self.domain_manager = DomainManager()
+        self.nodes_expanded = 0
+        self.queens: List[int] | None = None
+        self.limit = 50000
+        self.post_init()
 
     def solve(self) -> None:
         domains = self.domain_manager.create_domains(self.n)
-        self.board = self.initialize_board()
         self.domain_manager.assign_columns(domains, self.board)
         self.__solve(domains)
 
+    def post_init(self):
+        for row in range(self.n):
+            column = random.randint(0, self.n - 1)
+            self.board[row, column] = QUEEN
+            self.steps.append([row, column]) # steps which init the board
+
+    def get_queens(self) -> List[int]:
+        if self.queens is None:
+            raise ValueError("solve() method was not called")
+
+        return self.queens
+
+    def get_nodes_expanded(self) -> int:
+        return self.nodes_expanded
+
+    def reset(self):
+        super().reset()
+        self.nodes_expanded = 0
+        self.queens = None
+        self.post_init()
+
     def __solve(self, domains: list[Domain]) -> bool:
-        for i in range(50000):
+        for i in range(self.limit):
             self.print_board()
             row = self.select_row_with_conflict(domains)
             print(row)
             if row == -1:
+                self.queens = [domain.columns[0] for domain in domains]
                 return True
+
             for current_column in domains[row].columns:
                 self.board[row][current_column] = EMPTY
-                self.steps.append([row, current_column])
+                self.steps.append([int(row), int(current_column)])
 
             column = self.select_column_with_min_conflicts(domains, row)
             domains[row].columns = [column]
+
+            self.nodes_expanded += 1
             self.board[row][column] = QUEEN
             self.steps.append([row, column])
 
         return False
-
-    def initialize_board(self) -> np.array:
-        board = super(MinMaxConflict, self).initialize_board()
-        for row in range(self.n):
-            column = random.randint(0, self.n - 1)
-            board[row, column] = QUEEN
-        return board
 
     def select_row_with_conflict(self, domains: list[Domain]) -> int:
         rows_with_conflicts = []
