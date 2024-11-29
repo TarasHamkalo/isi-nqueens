@@ -14,6 +14,13 @@ class Solver:
     def solve(self):
         raise NotImplemented("Abstract")
 
+    def get_queens(self) -> List[int]:
+        # sequence of queens columns queens[row] -> col
+        raise NotImplemented("Abstract")
+
+    def get_nodes_expanded(self) -> int:
+        raise NotImplemented("Abstract")
+
     def get_steps(self):
         return self.steps
 
@@ -23,16 +30,6 @@ class Solver:
 
     def initialize_board(self) -> numpy.array:
         return np.zeros((self.n, self.n), dtype=int)
-
-    def print_board(self):
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.board[i][j] == 1:
-                    print("Q", end="")
-                else:
-                    print(".", end="")
-
-            print("")
 
     def is_on_board(self, i, j) -> bool:
         return 0 <= i < self.n and 0 <= j < self.n
@@ -53,3 +50,13 @@ class Solver:
                 indexes.append([i + k, j - k])
 
         return indexes
+
+    def print_board(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.board[i][j] == 1:
+                    print("Q", end="")
+                else:
+                    print(".", end="")
+
+            print("")

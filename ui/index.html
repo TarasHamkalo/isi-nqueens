@@ -29,6 +29,7 @@
             <button id="backwardButton"><<</button>
             <button id="forwardButton">>></button>
         </div>
+        <button id="showResult">Final queens positions</button>
         <button id="runButton">Play</button>
         <form id="playbackSpeedForm" action="#" onsubmit="setPlaybackSpeed(event)">
             <label for="playbackSpeed">Playback speed:</label>
@@ -53,7 +54,8 @@
         DFS: { value: 'dfs', publicName: 'Depth First Search' },
         BACKTRACKING: { value: 'backtracking', publicName: 'Backtracking' },
         FORWARD_CHECKING: { value: 'forwardchecking', publicName: 'Forward checking' },
-        MIN_MAX_CONFLICT: { value: 'minmax', publicName: 'Min-Max conflict' }
+        MIN_MAX_CONFLICT: { value: 'minmax', publicName: 'Min-Max conflict' },
+        HILL_CLIMBING: { value: 'hillclimbing', publicName: 'Hill climbing' }
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -68,6 +70,7 @@
             button.textContent = `Solve using ${publicName}`;
             button.id = `solve${key}`;
             button.addEventListener('click', () => {
+                solutionSteps = []
                 resetBoard();
                 setSolutionSteps(value);
             })
@@ -82,6 +85,32 @@
         document.getElementById('backwardButton').addEventListener('click', () => {
             stepBackward();
         });
+
+        document.getElementById("showResult").addEventListener('click', async () => {
+            if (isRun) {
+                pausePlaying()
+            }
+            resetBoard()
+
+            setFinalQueensPositions()
+
+        });
+
+        const setFinalQueensPositions = async () => {
+            const loadingElement = document.getElementById('loading');
+            loadingElement.style.display = 'block';
+            await fetch(`http://localhost:5000/board/queens`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((response) => response.json().then(responseSteps => {
+                    console.log(responseSteps)
+                    responseSteps.forEach((q, c) => queenToggle(q, c))
+                }))
+                .then(() => loadingElement.style.display = 'none');
+        }
 
         document.getElementById("playbackSpeed").addEventListener("wheel", (event) => {
             event.preventDefault();
