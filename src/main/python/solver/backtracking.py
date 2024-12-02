@@ -33,7 +33,12 @@ class Backtracking(Solver):
         if all(queen != -1 for queen in queens):
             return True
 
-        queen = self.select_queen_mrv(queens)
+        queen = self.select_queen_mrv_1(queens)
+        if queen == -1:
+            # all domains are empty
+            print("all domains empty")
+            return False
+
         logging.info(f"Queen selected {queen}")
         ordered_domain = self.order_domain_with_lcv(queens, queen)
 
@@ -53,16 +58,38 @@ class Backtracking(Solver):
 
         return False
 
+    def select_queen_mrv_1(self, queens) -> int:
+        domain_lengths = {}
+        for queen in range(self.n):
+            if queens[queen] != -1:
+                # if queen already placed
+                continue
+
+            domain_lengths[queen] = self.count_safe(queens, queen)
+
+        print(domain_lengths)
+
+        sorted_domain = sorted(domain_lengths.items(), key=lambda item: item[1])
+        for queen, d_len in sorted_domain:
+            if d_len > 0:
+                return queen
+
+        return -1
+        # return self.select_queen_mrv(queens)
+
+
     def select_queen_mrv(self, queens) -> int:
         # для кожної королеви перевір скільки існує варіантів розстановки
         min_queen = -1
         min_domain_len = float('inf')
+
         for queen in range(self.n):
             if queens[queen] != -1:
                 # select each only once
                 continue
 
             domain_len = self.count_safe(queens, queen)
+
             if domain_len < min_domain_len:
                 min_domain_len = domain_len
                 min_queen = queen
