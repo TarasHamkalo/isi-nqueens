@@ -33,9 +33,10 @@ class Backtracking(Solver):
         if all(queen != -1 for queen in queens):
             return True
 
-        queen = self.select_queen_mrv_1(queens)
+        queen = self.select_queen_mrv(queens)
         if queen == -1:
-            # all domains are empty
+            # ak nie je možné umiestniť žiadnu kráľovnú (všetky pozície sú napadnuté inými),
+            # potom návrat
             print("all domains empty")
             return False
 
@@ -45,11 +46,14 @@ class Backtracking(Solver):
         for col in ordered_domain:
             logging.info(f"Col selected with LCV: {col}")
             if not self.is_safe(queens, queen, col):
+                # ak sa kráľovná nedá bezpečne umiestniť
                 continue
 
+            # záznam kráľovnej a krokov
             self.nodes_expanded += 1
             self.steps.append((queen, col))
             queens[queen] = col
+
             if self._solve(queens):
                 return True
 
@@ -58,54 +62,50 @@ class Backtracking(Solver):
 
         return False
 
-    def select_queen_mrv_1(self, queens) -> int:
+    def select_queen_mrv(self, queens) -> int:
+        """
+        Z množiny kráľovien (premenných problému) vyberte kráľovnú,
+        ktorá má najmenší počet možných umiestnení v danom riadku (najmenšia oblasť)
+
+        :param queens: kráľovny vo formate queens[row] = col
+        :return vráti číslo dámy s najmenšou neprázdnou množinou ťahov
+        """
         domain_lengths = {}
         for queen in range(self.n):
             if queens[queen] != -1:
-                # if queen already placed
+                # preskočte tie, ktoré sú už nainštalované
                 continue
 
             domain_lengths[queen] = self.count_safe(queens, queen)
 
-        print(domain_lengths)
-
         sorted_domain = sorted(domain_lengths.items(), key=lambda item: item[1])
+
         for queen, d_len in sorted_domain:
             if d_len > 0:
                 return queen
 
         return -1
-        # return self.select_queen_mrv(queens)
 
 
-    def select_queen_mrv(self, queens) -> int:
-        # для кожної королеви перевір скільки існує варіантів розстановки
-        min_queen = -1
-        min_domain_len = float('inf')
 
-        for queen in range(self.n):
-            if queens[queen] != -1:
-                # select each only once
-                continue
-
-            domain_len = self.count_safe(queens, queen)
-
-            if domain_len < min_domain_len:
-                min_domain_len = domain_len
-                min_queen = queen
-
-        return min_queen
-
-    def count_safe(self, queens, queen) -> bool:
+    def count_safe(self, queens, queen) -> int:
+        """
+        Vypočíta počet bezpečných pozícií v danom riadku (row = queen)
+        """
         count = 0
         for col in range(self.n):
             if self.is_safe(queens, queen, col):
                count += 1
+
         return count
 
     def is_safe(self, queens, queen, col) -> bool:
+        """
+        Kontrola, či je dáma v pozícii (queen, col) v konflikte s inou dámou
+        Používa sa pritom diagonálne číslovanie (priamych aj vedľajsich)
+        """
         if col in queens:
-            # there is queen placed inside this column
+            # v tomto stĺpci je umiestnená kráľovná
             return False
 
         for other in range(self.n):
@@ -114,41 +114,61 @@ class Backtracking(Solver):
                 continue
 
             if other + other_col == queen + col:
-                # two queens have same anti-diag
+                # dve dámy sú na rovnakej vedľajšej diagonále
                 return False
 
             other_diag = other - other_col + self.n - 1
             queen_diag = queen - col + self.n - 1
             if other_diag == queen_diag:
-                # two queens have same diag
+                # dve dámy sú na rovnakej diagonále
                return False
 
         return True
 
     def order_domain_with_lcv(self, queens, queen):
-        # return list(range(self.n))
         heuristic_scores = [-1] * self.n
         for col in range(self.n):
-            # heuristic_scores[col] = self.count_locked(queens, queen, col) # 89
-            heuristic_scores[col] = self.count_remaining(queens, queen, col) # 39
+            # heuristic_scores[col] = self.count_locked(queen, col) # 89 steps for 8*8
+            heuristic_scores[col] = self.count_remaining(queens, queen, col) # 56 steps for 8*8
 
         domain_with_scores = [(col, heuristic_scores[col]) for col in range(self.n)]
         logging.debug(domain_with_scores)
 
-        # order ascending with heuristic
-        # ordered_domain = [col for col, _ in sorted(domain_with_scores, key=lambda x: x[1])]
-
-        # order in reverse to heuristic
+        # heuristika vráti množstvo voľných políčok,
+        # pričom najlepší ťah je ten, ktorý ich ponechá najviac,
+        # takže triedenie vzhľadom na score * -1
         ordered_domain = [col for col, _ in sorted(domain_with_scores, key=lambda x: -1 * x[1])]
 
         return ordered_domain
 
+    def count_remaining(self, queens, queen, col) -> int:
+        """
+        Vypočíta, koľko hodnôt domény zostane pre ostatné premenné,
+        keď umiestnime kráľovnú na pozíciu (queen, col)
+        """
+        remaining_values = 0
 
-    # count how many cells will be locked by placing queen there
-    def count_locked(self, queens, queen, col) -> int:
-        cells_locked = self.n -1 # whole column
+        queens[queen] = col
 
-        # for diags <= self.n - 1
+        # skontrolujte, ako toto umiestnenie ovplyvňuje ostatné nepriradené kráľovné.
+        for other in range(self.n):
+            if other == queen or queens[other] != -1:
+                # len nepriradené kráľovné a zaroveň nie vstupná
+                continue
+
+            remaining_values += self.count_safe(queens, other)
+
+        queens[queen] = -1
+        return remaining_values
+
+    def count_locked(self, queen, col) -> int:
+        """
+        Vypočita, koľko buniek bude zamknutých umiestnením kráľovnej na poziciu (queen, col)
+        *Táto heuristika vykazovala horšie výsledky, preto sa nepoužila
+        """
+
+        cells_locked = self.n - 1 # whole column
+
         diag = queen - col + self.n - 1 # diagonal on which this queen located
         anti_diag = queen + col # anti diagonal on which this queen located
         if diag <= self.n - 1:
@@ -167,19 +187,20 @@ class Backtracking(Solver):
 
         return cells_locked
 
-    # count how many domain values are left for other variables
-    def count_remaining(self, queens, queen, col) -> int:
-        remaining_values = 0
+    def select_queen_mrv_old(self, queens) -> int:
+        # для кожної королеви перевір скільки існує варіантів розстановки
+        min_queen = -1
+        min_domain_len = float('inf')
 
-        # add queen temporarily
-        queens[queen] = col
-        # check how this placement affects other unassigned queens
-        for other in range(self.n):
-            if other == queen or queens[other] != -1:
+        for queen in range(self.n):
+            if queens[queen] != -1:
+                # select each only once
                 continue
 
-            remaining_values += self.count_safe(queens, other)
+            domain_len = self.count_safe(queens, queen)
 
-        # remove the temporary placement
-        queens[queen] = -1
-        return remaining_values
+            if domain_len < min_domain_len:
+                min_domain_len = domain_len
+                min_queen = queen
+
+        return min_queen
