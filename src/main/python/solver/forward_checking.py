@@ -37,6 +37,9 @@ class ForwardChecking(Solver):
         self.print_board()
         print(f"Current domains: {domains}")
 
+        if (self.existsEmptyDomain(domains)):
+            return False
+
         if self.domain_manager.count_placed(domains) == self.n:
             print("All queens are placed.")
             self.queens = [domain.columns[0] for domain in domains]
@@ -85,3 +88,9 @@ class ForwardChecking(Solver):
         )
         print(f"LCV sorted columns for row {row}: {columns}")
         return columns
+
+    def existsEmptyDomain(self, domains: list[Domain]) -> bool:
+        for domain in domains:
+            if not domain.columns:
+                return True
+        return False
