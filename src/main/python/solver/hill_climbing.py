@@ -2,13 +2,13 @@ import logging
 import random
 from typing import List
 
-from solver.constants import QUEEN, EMPTY
-from solver.solver import Solver
+from .constants import QUEEN, EMPTY
+from .solver import Solver
 
-"""
-Reprezentuje možný krok algoritmu, stav, do ktorého sa môže presunúť pole
-"""
 class Neighbor:
+    """
+    Reprezentuje možný krok algoritmu, stav, do ktorého sa môže presunúť pole
+    """
     def __init__(self, queen: int, orig_col: int, next_col: int, heuristic_score: int = int(-1e32)):
         self.queen: int = queen  # reprezentuje kráľovnú (jej riadkovú pozíciu na poli)
         self.orig_col: int = orig_col  # pozícia, z ktorej sa má kráľovná presunúť
@@ -17,6 +17,9 @@ class Neighbor:
 
 
 class HillClimbing(Solver):
+    """
+    Implementuje algoritmus Hill climbing
+    """
 
     def __init__(self, n):
         super().__init__(n)

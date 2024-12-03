@@ -4,8 +4,10 @@ import numpy
 import numpy as np
 
 
-# Základná trieda pre všetky algoritmy riešenia (solver)
 class Solver:
+    """
+    Základná trieda pre všetky algoritmy riešenia (solver)
+    """
 
     def __init__(self, n: int):
         self.n = n # predstavuje veľkosť problému n-kráľovien

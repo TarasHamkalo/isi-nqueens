@@ -1,10 +1,13 @@
 from typing import List
 
-from solver.constants import QUEEN, EMPTY
-from solver.solver import Solver
+from .constants import QUEEN, EMPTY
+from .solver import Solver
 
 
 class Dfs(Solver):
+    """
+    Implementuje algoritmus 'dfs'
+    """
 
     def __init__(self, n: int):
         super().__init__(n)
@@ -14,7 +17,7 @@ class Dfs(Solver):
     def solve(self):
         """
         Prechádza riadok po riadku, začínajúc od riadku 0,
-        umiestňuje kráľovnú na nejakú pozíciu (zľava doprava)
+        umiestňuje kráľovnú na nejakú pozíciu (stľpec, zľava doprava)
         a kontroluje, či je daný stav cieľovým stavom.
         """
         self._solve(0)
@@ -82,14 +85,11 @@ class Dfs(Solver):
 
     def is_safe(self, i, j):
         """
-        Skontrolovať, či sa nachádza iná kráľovná okrem tejto v stĺpci, riadku alebo diagonále
+        Skontrolovať, či sa nachádza iná kráľovná okrem tejto v stĺpci alebo diagonále
         :param i: queen row
         :param j: queen column
         :return:
         """
-
-        if self.board[i, :].sum() - QUEEN > 0:
-            return False
 
         # skontrolovať súčet stĺpca, ak > QUEEN, potom je umiestnených viac ako jedna kráľovná
         if self.board[:, j].sum() - QUEEN > 0:

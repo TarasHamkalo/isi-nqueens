@@ -1,17 +1,22 @@
 import logging
 from typing import List
 
-from solver.solver import Solver
+from .solver import Solver
+
 
 class Backtracking(Solver):
+    """
+    Rozširuje základný algoritmus 'backtracking' o mrv a lcv metody
+    """
 
     def __init__(self, n):
         super().__init__(n)
-        self.queens: List[int] | None = None
-        self.nodes_expanded = 0
+        self.queens: List[
+                         int] | None = None  # pole predstavuje stav problému (rozloženie kráľovných) queens[row] = col
+        self.nodes_expanded = 0  # počet prejdených stavov (uzlov)
 
     def solve(self):
-        queens = [-1] * self.n
+        queens = [-1] * self.n  # inicializuje problém
         self._solve(queens)
         self.queens = queens
 
@@ -31,6 +36,7 @@ class Backtracking(Solver):
 
     def _solve(self, queens: List[int]) -> bool:
         if all(queen != -1 for queen in queens):
+            # ak sú všetke kráľovne umiestnené, tak najdené riešenie
             return True
 
         queen = self.select_queen_mrv(queens)
@@ -86,8 +92,6 @@ class Backtracking(Solver):
 
         return -1
 
-
-
     def count_safe(self, queens, queen) -> int:
         """
         Vypočíta počet bezpečných pozícií v danom riadku (row = queen)
@@ -95,7 +99,7 @@ class Backtracking(Solver):
         count = 0
         for col in range(self.n):
             if self.is_safe(queens, queen, col):
-               count += 1
+                count += 1
 
         return count
 
@@ -121,7 +125,7 @@ class Backtracking(Solver):
             queen_diag = queen - col + self.n - 1
             if other_diag == queen_diag:
                 # dve dámy sú na rovnakej diagonále
-               return False
+                return False
 
         return True
 
@@ -129,7 +133,7 @@ class Backtracking(Solver):
         heuristic_scores = [-1] * self.n
         for col in range(self.n):
             # heuristic_scores[col] = self.count_locked(queen, col) # 89 steps for 8*8
-            heuristic_scores[col] = self.count_remaining(queens, queen, col) # 56 steps for 8*8
+            heuristic_scores[col] = self.count_remaining(queens, queen, col)  # 56 steps for 8*8
 
         domain_with_scores = [(col, heuristic_scores[col]) for col in range(self.n)]
         logging.debug(domain_with_scores)
@@ -167,10 +171,10 @@ class Backtracking(Solver):
         *Táto heuristika vykazovala horšie výsledky, preto sa nepoužila
         """
 
-        cells_locked = self.n - 1 # whole column
+        cells_locked = self.n - 1  # whole column
 
-        diag = queen - col + self.n - 1 # diagonal on which this queen located
-        anti_diag = queen + col # anti diagonal on which this queen located
+        diag = queen - col + self.n - 1  # diagonal on which this queen located
+        anti_diag = queen + col  # anti diagonal on which this queen located
         if diag <= self.n - 1:
             # interesting that the index of diag corresponds to number of elements in it -1
             cells_locked += diag
