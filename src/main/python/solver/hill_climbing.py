@@ -15,6 +15,7 @@ class Neighbor:
         self.next_col: int = next_col
         self.heuristic_score: int = heuristic_score
 
+
 class HillClimbing(Solver):
 
     def __init__(self, n):
@@ -72,7 +73,7 @@ class HillClimbing(Solver):
             best_neighbor: Neighbor = min(neighbors, key=lambda n: n.heuristic_score)
             logging.debug([neighbor.heuristic_score for neighbor in neighbors])
             logging.debug(f"Best score is {best_neighbor.heuristic_score}."
-                  f" Move Queen {best_neighbor.queen} to Column {best_neighbor.next_col}")
+                          f" Move Queen {best_neighbor.queen} to Column {best_neighbor.next_col}")
 
             # self.print_board()
             # self.print_neighbors(neighbors)
@@ -83,7 +84,12 @@ class HillClimbing(Solver):
             elif best_neighbor.heuristic_score == self.solution_score and side_moves_copy > 0:
                 logging.debug("Making side move!")
                 side_moves_copy -= 1
-                self.solution_score = self.update_state(self.solution_score, best_neighbor)
+                best_neighbors = filter(
+                    lambda x: x.heuristic_score == best_neighbor.heuristic_score, neighbors
+                )
+                random_neighbor = random.choice(list(best_neighbors))
+
+                self.solution_score = self.update_state(self.solution_score, random_neighbor)
             else:
                 logging.debug("No improvement possible.")
 
@@ -166,4 +172,3 @@ class HillClimbing(Solver):
             if (i + 1) % (self.n - 1) == 0:
                 print()
         print()
-
