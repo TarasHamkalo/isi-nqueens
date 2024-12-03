@@ -8,18 +8,15 @@ class Dfs(Solver):
 
     def __init__(self, n: int):
         super().__init__(n)
-        self.queens = []
-        self.nodes_expanded = 0
+        self.queens = []  # sleduje pozície kráľovien
+        self.nodes_expanded = 0  # sleduje počet krokov
 
     def solve(self):
-        # візьми як перший стан, перший рядок
-        # додай усі клітинки наступного рядку
-        # вибери одну і йди далі
-
-        # if frontier is empty -> false
-        # вибери позицію, постав королеву
-        # if row == 8 and valid -> true
-        # додай усіх сусідів та рекурсія
+        """
+        Prechádza riadok po riadku, začínajúc od riadku 0,
+        umiestňuje kráľovnú na nejakú pozíciu (zľava doprava)
+        a kontroluje, či je daný stav cieľovým stavom.
+        """
         self._solve(0)
 
     def reset(self):
@@ -39,28 +36,29 @@ class Dfs(Solver):
     def get_nodes_expanded(self):
         return self.nodes_expanded
 
-    # queens placed
-    # when all variables set -> check for consistency
     def _solve(self, i) -> bool:
         if i == self.n:
-            # frontier can not be expanded, no other child nodes
+            # ak bol dosiahnutý posledný riadok, stop DFS
             return False
 
         for j in range(0, self.n):
+            # sleduje pozície kráľovien a kroky
             self.board[i][j] = QUEEN
-
-            self.nodes_expanded += 1
 
             self.queens.append((i, j))
             self.steps.append((i, j))
 
+            self.nodes_expanded += 1 # počítadlo krokov
+
             if self.is_goal_state():
+                # ak bol nájdený cieľový stav, vrátiť
                 return True
 
-            # expand frontier with adjacent cells
+            # prejsť do iných stavov, začínajúc od ďalšieho riadku
             if self._solve(i + 1):
                 return True
 
+            # ak cieľový stav nebol nájdený pri aktuálnom umiestnení, odstrániť
             self.board[i][j] = EMPTY
             self.steps.append((i, j))
             self.queens.pop()
@@ -68,20 +66,32 @@ class Dfs(Solver):
         return False
 
     def is_goal_state(self):
+        """
+         Cieľový stav: Všetky kráľovné sú umiestnené a žiadna z nich sa nenapadá.
+        :return:
+        """
         return len(self.queens) == self.n and self.no_queens_attack()
 
     def no_queens_attack(self):
         for i, j in self.queens:
+            # pre každú umiestnenú kráľovnú skontrolovať, či sa nekonfliktuje s inou
             if not self.is_safe(i, j):
-                # this queen attack some other
                 return False
 
         return True
 
     def is_safe(self, i, j):
+        """
+        Skontrolovať, či sa nachádza iná kráľovná okrem tejto v stĺpci, riadku alebo diagonále
+        :param i: queen row
+        :param j: queen column
+        :return:
+        """
+
         if self.board[i, :].sum() - QUEEN > 0:
             return False
 
+        # skontrolovať súčet stĺpca, ak > QUEEN, potom je umiestnených viac ako jedna kráľovná
         if self.board[:, j].sum() - QUEEN > 0:
             return False
 
