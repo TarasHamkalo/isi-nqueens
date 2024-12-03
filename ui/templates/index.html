@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N-Queens Problem</title>
-    <link rel="stylesheet" href="style.css">
+
+<!--    <link rel="stylesheet" href="style.css">-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
@@ -14,12 +16,14 @@
     <div id="solver-pickers" class="controls controls-left">
         <div class="limit--input">
             <form id="limitForm" action="#" onsubmit="return false;">
-                <label for="limit">Limit</label><input class="input--field" type="number" id="limit" name="limit"
-                                                  placeholder="5000" min="1" max="10000">
+                <label for="limit">Limit</label><input class="input--field" type="number" id="limit"
+                                                       name="limit"
+                                                       placeholder="5000" min="1" max="10000">
             </form>
             <form id="sideMovesForm" action="#" onsubmit="return false;">
-                <label for="sideMoves">Side moves</label><input class="input--field" type="number" id="sideMoves" name="sideMoves"
-                                                      placeholder="5" min="1" max="100">
+                <label for="sideMoves">Side moves</label><input class="input--field" type="number"
+                                                                id="sideMoves" name="sideMoves"
+                                                                placeholder="5" min="1" max="100">
             </form>
         </div>
     </div>
@@ -31,7 +35,8 @@
     <div id="loading" style="display: none;">Solving...</div>
 
     <div id="right-panel" style="display: flex; flex-direction: column; gap: 50px; width: 20em">
-        <div class="stats" style="display: flex; gap: 10px; flex-direction: column; align-items: center; width: 100%;">
+        <div class="stats"
+             style="display: flex; gap: 10px; flex-direction: column; align-items: center; width: 100%;">
 
             <div class="gray-theme-stat" style="width: 80%;">
                 <span class="gray-label">Solve Duration:</span>
@@ -44,22 +49,24 @@
             </div>
         </div>
 
-    <div class="controls controls-right">
-        <div class="one-step-button">
-            <button id="backwardButton"><<</button>
-            <button id="forwardButton">>></button>
-        </div>
-        <button id="showResult">Final queens positions</button>
-        <button id="runButton">Play</button>
-
-        <form id="playbackSpeedForm" action="#" onsubmit="return false;">
-            <label for="playbackSpeed">Playback speed:</label>
-            <div style="display: inline-flex; align-items: center;">
-                <input class="input--field" type="number" id="playbackSpeed" name="playbackSpeed" placeholder="1000" min="0" max="1">
-                <span style="margin-left: 8px;">ms</span>
+        <div class="controls controls-right">
+            <div class="one-step-button">
+                <button id="backwardButton"><<</button>
+                <button id="forwardButton">>></button>
             </div>
-        </form>
+            <button id="showResult">Final queens positions</button>
+            <button id="runButton">Play</button>
 
+            <form id="playbackSpeedForm" action="#" onsubmit="return false;">
+                <label for="playbackSpeed">Step duration:</label>
+                <div style="display: inline-flex; align-items: center;">
+                    <input class="input--field" type="number" id="playbackSpeed"
+                           name="playbackSpeed" placeholder="1000" min="1" max="1000">
+                    <span style="margin-left: 8px;">ms</span>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
@@ -74,11 +81,13 @@
     let sideMoves = 5;
 
     const Methods = {
-        DFS: { value: 'dfs', publicName: 'Depth First Search' },
-        BACKTRACKING: { value: 'backtracking', publicName: 'Backtracking' },
-        FORWARD_CHECKING: { value: 'forwardchecking', publicName: 'Forward checking' },
-        MIN_MAX_CONFLICT: { value: 'minmax', publicName: 'Min-Max conflict' },
-        HILL_CLIMBING: { value: 'hillclimbing', publicName: 'Hill climbing' }
+        DFS: {value: 'dfs', publicName: 'Depth First Search'},
+        BACKTRACKING: {value: 'backtracking', publicName: 'Backtracking MRV&LCV'},
+        NAIVE_BACKTRACKING: {value: 'dfsbacktracking', publicName: 'Backtracking'},
+        FORWARD_CHECKING: {value: 'forwardchecking', publicName: 'Forward checking'},
+        MIN_MAX_CONFLICT: {value: 'minmax', publicName: 'Min-Max conflict'},
+        HILL_CLIMBING: {value: 'hillclimbing', publicName: 'Hill climbing'}
+
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -87,7 +96,7 @@
         initBoard(board);
         defineQueen();
 
-        const solverPickers  = document.getElementById('solver-pickers')
+        const solverPickers = document.getElementById('solver-pickers')
         for (const [key, {value, publicName}] of Object.entries(Methods)) {
             const button = document.createElement('button');
             button.textContent = `Solve using ${publicName}`;
@@ -250,7 +259,8 @@
 
     function defineQueen() {
         const queen_img = document.createElement("img");
-        queen_img.src = 'fig/queen.png';
+        queen_img.src = "{{ url_for('static', filename='fig/queen.png') }}";
+        // queen_img.src = 'fig/queen.png';
         queen_img.classList.add('queen');
         queen_img.style.mixBlendMode = 'multiply';
         return queen_img;

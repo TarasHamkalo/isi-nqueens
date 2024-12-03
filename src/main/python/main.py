@@ -1,24 +1,29 @@
 import logging
+import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, request, render_template
 from flask_cors import cross_origin
 
 from app import App
 from solver.hill_climbing import HillClimbing
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 
-flask = Flask(__name__)
+template_dir = os.path.abspath('ui/templates')
+static_dir = os.path.abspath('ui/static')
+flask = Flask(__name__, static_folder=static_dir, template_folder=template_dir)
 app = App()
+
 
 @flask.errorhandler(ValueError)
 def handle_bad_request(e: Exception):
-  return str(e), 400
+    return str(e), 400
 
-#TODO: update api to return final queen positions
+
 @flask.route('/board/<string:solver_name>/solve', methods=['GET'])
-@cross_origin(origin='*', headers=['Content-Type','Authorization'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def get_steps(solver_name: str):
+    logging.info(f"Solver got {solver_name}")
     steps = app.get_steps(solver_name)
     duration = app.get_solve_duration()
     nodes_expanded = app.get_nodes_expanded()
@@ -29,8 +34,9 @@ def get_steps(solver_name: str):
         "nodesExpanded": nodes_expanded
     }
 
+
 @flask.route('/board/solvers/setup', methods=['POST'])
-@cross_origin(origin='*', headers=['Content-Type','Authorization'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def setup():
     print(request.args)
     limit = request.args.get('limit', type=int)
@@ -42,20 +48,20 @@ def setup():
     app.set_side_moves(side_moves)
     return 'ok'
 
+
 @flask.route('/board/queens', methods=['GET'])
 @cross_origin()
 def get_queens():
     return app.get_queens()
 
+
+@flask.route('/')
+def home():
+    return render_template('index.html')
+
+
 if __name__ == '__main__':
     flask.run()
-    # n = 8
-    # bc = Backtracking(n)
-    # bc.solve()
-    # print('forward checking')
-    # fc = ForwardChecking(n)
-    # fc.solve()
-
 
 def hill_climbing():
     hc = HillClimbing(8)

@@ -6,6 +6,7 @@ from solver.dfs import Dfs
 from solver.hill_climbing import HillClimbing
 from solver.min_max_conflict import MinMaxConflict
 from solver.solver import Solver
+from src.main.python.solver.dfs_backtracking import DfsBacktracking
 from src.main.python.solver.forward_checking import ForwardChecking
 
 
@@ -17,6 +18,7 @@ class App:
         'minmax': MinMaxConflict(8),
         'hillclimbing': HillClimbing(8),
         'backtracking': Backtracking(8),
+        'dfsbacktracking': DfsBacktracking(8),
     }
 
     def __init__(self):
@@ -34,7 +36,8 @@ class App:
         self.solver.solve()
         end_time = time.time()
         self.solve_duration = end_time - start_time
-
+        print(self.solver.get_queens())
+        self.solver.print_board()
         print(f"{self.solver}: {self.solver.get_steps()}")
         return self.solver.get_steps()
 
