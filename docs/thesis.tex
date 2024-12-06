@@ -1,0 +1,27 @@
+\documentclass{tukethesis}
+
+\setdefaultlanguage{slovak}
+\setotherlanguage{english}
+
+\addbibresource{bibliography.bib}
+\input{acronyms}
+\input{metadata}
+
+\ifdefined\printable
+   \hypersetup{hidelinks}
+\fi
+
+
+\begin{document}
+
+  \thispagestyle{empty}
+
+  \frontpage{}
+
+
+\pagenumbering{arabic}
+
+\include{chapters/dfs-based-algorithms}
+\include{chapters/heuristic-algorithms}
+
+\end{document}
