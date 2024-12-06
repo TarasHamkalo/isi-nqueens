@@ -6,7 +6,84 @@
 Táto kapitola sa zaoberá algoritmami, ktoré využívajú prehľadávanie do hĺbky (DFS) na riešenie problémov. Tieto algoritmy postupne skúmajú všetky možné riešenia a využívajú techniky, ako je dopredná kontrola a backtracking, na optimalizáciu procesu hľadania riešení.
 
 \section*{DFS}
-\section*{Backtracking}
+File: solver/dfs.py
+
+DFS je vyhľadávací algoritmus v strome alebo grafe, ktorý vždy vyberá najhlbší uzol (pomocou štruktúry Zasobník). Tento algoritmus má nízke pamäťové nároky, ale časová zložitosť je veľmi vysoká. Na riešenie problému n kráľovien musíme definovať naše uzly stromu (stavy), ktoré bude algoritmus prehľadávať. V našom prípade je stav definovaný ako ľubovoľné usporiadanie n kráľovien na šachovnici.
+
+Od iných algoritmov sa líši tým, že  nerozlišuje a nijak nevyhodnocuje stavy šachovnice, pozná len počiatočný a cieľový stavy. V našom prípade algoritmus začína s prázdnou šachovnicou a hľadá stav (cieľový), v ktorom sú bezpečne umiestnené všetky dámy na šachovnici.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        \textbf{Problem Size} & \textbf{Time (Sec)} & \textbf{Nodes Expanded} & \textbf{Solved} \\
+        \hline
+        4 & 0.0007 & 154 & True \\
+        8 & 4.4990 & 1,485,548 & True \\
+        9 & 37.1991 & 14,226,687 & True \\
+        \hline
+    \end{tabular}
+    \caption{Výsledky algoritmu DFS}
+    \label{tab:dfs_results}
+\end{table}
+\section*{Spätné prehľadávanie}
+File: solver/dfs\_backtracking.py
+
+Algoritmus spätného prehľadávania je populárna metóda, ktorá používa rovnakú stratégiu prehľadávania stavov ako algoritmus DFS, ale vyradí tie stavy, ktoré nespĺňajú podmienku konzistencie pre konkrétny problém. Jeho kľúčovou vlastnosťou je postupné overovanie tejto podmienky. Napríklad v probléme s n dámami to znamená, že sa pred umiestnením dámy overí, či na vybranej pozícii nebude napadnutá.
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Problem Size} & \textbf{Time (Sec)} & \textbf{Nodes Expanded} & \textbf{Solved} \\
+    \hline
+    4 & 0.0002 & 8 & True \\
+    8 & 0.0046 & 113 & True \\
+    9 & 0.0019 & 41 & True \\
+    16 & 0.6483 & 10,052 & True \\
+    20 & 17.6723 & 199,635 & True \\
+    25 & 6.7871 & 48,683 & True \\
+    \hline
+  \end{tabular}
+  \caption{Výsledky spätného prehľadávania}
+  \label{tab:backtracking_basic_results}
+\end{table}
+
+Na ďalšiu optimalizáciu spätného prehľadávania, konkrétne na zníženie počtu krokov, môžeme zvážiť zmenu poradia výberu premenných a hodnôt ich domén.
+Na použitie týchto metód je potrebné jasne sformulovať problém.
+
+Formulácia problému:
+\begin{itemize}
+    \item \textbf{Premenne problému:} $n$ kráľovien, ktoré predstavujú riadok na šachovnici.
+    \item \textbf{Doména hodnôt premenných:} $\{0, \dots, n - 1\}$, čo predstavuje stĺpec na šachovnici.
+\end{itemize}
+
+\section*{MRV pri spätnom prehľadávaní}
+Algoritmus spätného prehľadávania zvyčajne vyberá premenné problému v náhodnom poradí (v našom prípade postupne, počnúc horným riadkom, prvou dámou). Tento prístup nie je vždy optimálny a na jeho zlepšenie možno použiť metódu minimálnych zostávajúcich hodnôt.
+Logika tohto prístupu spočíva v tom, že sa najprv vyberú premenné, ktoré s najväčšou pravdepodobnosťou spôsobia problém v budúcnosti, čím sa implementuje stratégia fail-first. V praxi to znamená výber kráľovnej, ktorá má v doméne najmenší počet platných hodnôt (stĺpce, ktoré nie sú napadnuté).
+\section*{LCV pri spätnom prehľadávaní}
+Podobne ako pri výbere premennej, algoritmus spätného prehľadávania vyberá hodnoty domény postupne. Existuje však aj iný prístup, ktorý sa vola Najmenej obmedzujúca hodnota (LCV). V praxi to znamena, že hodnoty domén sa budu vyhodnocovať podľa počtu konfliktov, ktoré spôsobujú, a vyberie sa tá, ktorá spôsobuje ich najmenej. Logikou daného pristupu je zachovanie maximálnej flexibility pri výbere hodnôt domén ostatných premenných, čo vykazuje aj dobre výsledky.
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Problem Size} & \textbf{Time (Sec)} & \textbf{Nodes Expanded} & \textbf{Solved} \\
+    \hline
+    8   & 0.0048 & 56    & TRUE \\
+    9   & 0.0048 & 39    & TRUE \\
+    16  & 0.1873 & 575   & TRUE \\
+    30  & 0.4972 & 98    & TRUE \\
+    50  & 20.6819 & 2554  & TRUE \\
+    70  & 55.4207 & 2355  & TRUE \\
+    80  & 55.5211 & 322   & TRUE \\
+    90  & 2258.5207 & 57989 & TRUE \\
+    100 & 162.6291 & 306   & TRUE \\
+    \hline
+  \end{tabular}
+  \caption{Výsledky spätného prehľadávania pri použití MRV a LCV súčasne}
+  \label{tab:backtracing_extended_results}
+\end{table}
+
 \section*{Dopredná kontrola}
 Domény pre tento problém sú definované tak, že každá kráľovná je reprezentovaná ako premenná, ktorá sa nachádza v konkrétnom riadku šachovnice. Doména tejto premennej je množina možných pozícií, ktoré môže kráľovná zaujať v príslušnom riadku. V prípade 4x4 šachovnice má každá kráľovná na začiatku 4 možné hodnoty (stĺpce od 0 do 3) ako je znázornené na obrázku \ref{fig:forward-checking-zero-step}. Akonáhle sa však jedna z kráľovien umiestni na konkrétnu pozíciu, zvyšné hodnoty v doméne sú zredukované na základe konfliktov s ostatnými kráľovnami ako je znázornené na obrázku \ref{fig:forward-checking-first-step}.\par
 

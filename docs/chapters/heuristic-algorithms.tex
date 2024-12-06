@@ -22,3 +22,36 @@ Najprv sa dámy umiestnia na šachovnicu do náhodných pozícií z domény ako 
 \end{figure}
 
 \section*{HillClimbing}
+
+Algoritmus Hill Climbing je príkladom lokálneho vyhľadávania. Algoritmy tohto typu začínajú riešenie náhodným priradením hodnôt domény premenným a postupne sa snažia priviesť problém do konzistentného stavu.
+Hill-climbing je greedy algoritmus, ktorý v každom kroku porovnáva všetky stavy, do ktorých sa môže dostať, s aktuálnym stavom a vyberá ten najlepší (bez ohľadu na buduce moznosti rozvoja tohto stavu). Na vyhodnotenie používa určitú funkciu (heuristiku), v našom prípade heuristickou funkciou je počet dvojíc kráľovien, ktoré na seba útočia.
+
+Existujú aj modifikácie tohto algoritmu.
+
+\begin{itemize}
+    \item \textbf{Sideway moves:} Po vstupe do lokálneho minima sa algoritmus pokúsi vyjsť von, prechodom do susediacich stavov s rovnakou hodnotou heuristiky.
+    \item \textbf{Random restart:} Algoritmus sa spustí niekoľkokrát v nádeji, že počiatočné usporiadanie kráľovien bude úspešnejšie.
+\end{itemize}
+
+
+Vďaka tejto metóde výberu ďalšieho stavu sa dosiahne neuveriteľne malý počet krokov, v priemere 4 kroky pre problém veľkosti 8. To je však kompenzované veľmi nízkou výkonnosťou algoritmu, keďže rieši približne 13 % usporiadaní kráľovien.  Táto situácia vzniká v dôsledku tendencie algoritmu uviaznuť v lokálnych minimách alebo „ramenách“. Ide o body, v ktorých heuristické hodnoty všetkých susedných stavov nie sú vyššie ako náš aktuálny stav, a preto algoritmus nemusí pokračovať v hľadaní.
+
+Výsledky algoritmu sa dajú výrazne zlepšiť povolením pohybov do stavov s rovnakým skóre, ako má náš stav (Sideways moves).
+Výsledky sú uvedené nižšie (bolo vykonané 100 spustení).
+\begin{longtable}{|c|c|c|c|c|}
+  \hline
+  \textbf{Problem size} & \textbf{Avg Time Sec} & \textbf{Avg Nodes expanded} & \textbf{Side moves} & \textbf{Success rate} \\
+  \hline
+  16 & 0.01614097595 & 6.49 & 0 & 3.00\% \\
+  16 & 0.06838754177 & 30.78 & 50 & 82.00\% \\
+  16 & 0.07235177994 & 33.19 & 100 & 95.00\% \\
+  \hline
+  8  & 0.00145539999  & 3.09  & 0 & 13.00\% \\
+  8  & 0.006260027885 & 17.8  & 50 & 92.00\% \\
+  8  & 0.008184123039 & 23.68 & 100 & 94.00\% \\
+  \hline
+  4  & 0.0002376747131 & 1.56  & 0 & 37.00\% \\
+  4  & 0.000291030407  & 3.02  & 50 & 100.00\% \\
+  4  & 0.0001915192604 & 2.96  & 100 & 100.00\% \\
+  \hline
+\end{longtable}
