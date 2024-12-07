@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N-Queens Problem</title>
 
-<!--    <link rel="stylesheet" href="style.css">-->
+    <!--    <link rel="stylesheet" href="style.css">-->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -16,14 +16,18 @@
     <div id="solver-pickers" class="controls controls-left">
         <div class="limit--input">
             <form id="limitForm" action="#" onsubmit="return false;">
-                <label for="limit">Limit</label><input class="input--field" type="number" id="limit"
-                                                       name="limit"
-                                                       placeholder="5000" min="1" max="10000">
+                <label for="limit">Limit</label>
+                <input class="input--field" type="number" id="limit"
+                       name="limit"
+                       placeholder="5000" min="1" max="10000">
             </form>
             <form id="sideMovesForm" action="#" onsubmit="return false;">
-                <label for="sideMoves">Side moves</label><input class="input--field" type="number"
-                                                                id="sideMoves" name="sideMoves"
-                                                                placeholder="5" min="1" max="100">
+                <label for="sideMoves">Sideway moves</label>
+                <input class="input--field"
+                       type="number"
+                       id="sideMoves" name="sideMoves"
+                       placeholder="5" min="0"
+                       max="100">
             </form>
         </div>
     </div>
@@ -137,12 +141,12 @@
                     'Content-Type': 'application/json',
                 },
             })
-                .then((response) => response.json().then(responseSteps => {
-                    console.log(responseSteps)
-                    responseSteps.forEach((q, c) => queenToggle(c, q))
-                    actualStep = solutionSteps.length
-                }))
-                .then(() => loadingElement.style.display = 'none');
+                    .then((response) => response.json().then(responseSteps => {
+                        console.log(responseSteps)
+                        responseSteps.forEach((q, c) => queenToggle(c, q))
+                        actualStep = solutionSteps.length
+                    }))
+                    .then(() => loadingElement.style.display = 'none');
         }
 
         document.getElementById("playbackSpeed").addEventListener("wheel", (event) => {
@@ -246,15 +250,15 @@
                 'Content-Type': 'application/json',
             },
         })
-            .then((response) => response.json().then(solution => {
-                solutionSteps = solution.steps
-                console.log(solution)
-                document.getElementById('solveDuration').textContent =
-                    `${solution.solveDuration.toFixed(4)} s`;
-                document.getElementById('nodesExpanded').textContent =
-                    `${solution.nodesExpanded}`;
-            }))
-            .then(() => loadingElement.style.display = 'none');
+                .then((response) => response.json().then(solution => {
+                    solutionSteps = solution.steps
+                    console.log(solution)
+                    document.getElementById('solveDuration').textContent =
+                            `${solution.solveDuration.toFixed(4)} s`;
+                    document.getElementById('nodesExpanded').textContent =
+                            `${solution.nodesExpanded}`;
+                }))
+                .then(() => loadingElement.style.display = 'none');
     }
 
     function defineQueen() {
