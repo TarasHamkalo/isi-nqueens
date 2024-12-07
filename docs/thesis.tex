@@ -8,8 +8,11 @@
 \input{metadata}
 
 \ifdefined\printable
-   \hypersetup{hidelinks}
+\hypersetup{hidelinks}
 \fi
+
+
+\usepackage{attachfile}
 
 
 \begin{document}
@@ -19,9 +22,10 @@
   \frontpage{}
 
 
-\pagenumbering{arabic}
+  \pagenumbering{arabic}
 
-\include{chapters/dfs-based-algorithms}
-\include{chapters/heuristic-algorithms}
+  \include{chapters/dfs-based-algorithms}
+  \include{chapters/heuristic-algorithms}
+  \include{chapters/app-doc}
 
 \end{document}

@@ -9,8 +9,8 @@ from solver.hill_climbing import HillClimbing
 
 logging.getLogger().setLevel(logging.INFO)
 
-template_dir = os.path.abspath('ui/templates')
-static_dir = os.path.abspath('ui/static')
+template_dir = os.path.abspath('../../../ui/templates')
+static_dir = os.path.abspath('../../../ui/static')
 flask = Flask(__name__, static_folder=static_dir, template_folder=template_dir)
 app = App()
 

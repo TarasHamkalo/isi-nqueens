@@ -85,6 +85,8 @@ Podobne ako pri výbere premennej, algoritmus spätného prehľadávania vyberá
 \end{table}
 
 \section*{Dopredná kontrola}
+File: solver/forward\_checking.py\par
+
 Domény pre tento problém sú definované tak, že každá kráľovná je reprezentovaná ako premenná, ktorá sa nachádza v konkrétnom riadku šachovnice. Doména tejto premennej je množina možných pozícií, ktoré môže kráľovná zaujať v príslušnom riadku. V prípade 4x4 šachovnice má každá kráľovná na začiatku 4 možné hodnoty (stĺpce od 0 do 3) ako je znázornené na obrázku \ref{fig:forward-checking-zero-step}. Akonáhle sa však jedna z kráľovien umiestni na konkrétnu pozíciu, zvyšné hodnoty v doméne sú zredukované na základe konfliktov s ostatnými kráľovnami ako je znázornené na obrázku \ref{fig:forward-checking-first-step}.\par
 
 Ak po umiestnení ďalšej dámy existuje aspoň jeden riadok, do ktorého nie je možné umiestniť dámu bez konfliktu ako je znázornené na obrázku~\ref{fig:forward-checking-empty-domain}, potom sa ďalšia dáma neumiestni a algoritmus vykoná krok späť .
@@ -109,7 +111,7 @@ Ak po umiestnení ďalšej dámy existuje aspoň jeden riadok, do ktorého nie j
     \label{fig:forward-checking-empty-domain}
 \end{figure}
 
-\subsection{MRV v doprednej kontrola}
+\section{MRV v doprednej kontroe}
 Riadok, v ktorom bude umiestnená ďalšia dáma, sa vyberie ako riadok, v ktorom má dáma najmenší počet možných pozícií. Ako je znázornené na obrázku \ref{fig:forward-checking-mrv} prvý riadok\footnote{Číslovanie začína od 0.} má najmenší počet možností umiestnenia kráľovnej, takže kráľovná bude umiestnená na ňom.
 \begin{figure}
     \centering
@@ -118,11 +120,55 @@ Riadok, v ktorom bude umiestnená ďalšia dáma, sa vyberie ako riadok, v ktoro
     \label{fig:forward-checking-mrv}
 \end{figure}
 
-\subsection{LCV v doprednej kontrola}
+\section{LCV v doprednej kontrole}
 Po výbere riadku pomocou MRV sa vyberie stĺpec, v ktorom bude umiestnená kráľovná. Vyberie sa pozícia, na ktorej kráľovná vytvorí najmenší možný počet nových konfliktov. Na obrázku \ref{fig:forward-checking-lcv} prvá kráľovná vytvorí 2 nové konflikty a druhá vytvorí 3 konflikty.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{figs/forward-checking/forward-checking-lcv}
-    \caption{Výber stĺpca pri doprednej kontrole pomocou LCV}
+    \caption{Výber stĺpca pri doprednej kontroly pomocou LCV}
     \label{fig:forward-checking-lcv}
+\end{figure}
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Problem Size} & \textbf{Time (Sec)} & \textbf{Nodes Expanded} & \textbf{Solved} \\
+    \hline
+    8   & 0.0145368576 & 39    & TRUE \\
+    9   & 0.0107254982 & 21    & TRUE \\
+    16  & 0.3472878933 & 332   & TRUE \\
+    30  & 0.2026946545 & 68    & TRUE \\
+    50  & 7.198326826  & 902   & TRUE \\
+    70  & 13.18685579  & 1014  & TRUE \\
+    80  & 3.904132605  & 207   & TRUE \\
+    90  & 525.7122047  & 21536 & TRUE \\
+    100 & 5.13761878   & 175   & TRUE \\
+    \hline
+  \end{tabular}
+  \caption{Výsledky doprednej kontroly pri použití MRV a LCV súčasne}
+  \label{tab:forward_checking_extended_results}
+\end{table}
+
+\section{Zhrnutie}
+
+Grafy \ref{fig:size} a \ref{fig:time} zobrazujú výsledky z tabuliek uvedených pri každej metóde. Vyplýva z nich niekoľko zaujímavých záverov. Algoritmus DFS je výrazne horší z hľadiska spotrebovaného času aj počtu navštívených uzlov. Aj pri malých veľkostiach problémov je jasne viditeľná jeho nevýhoda.\par
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{figs/img_1}
+    \caption{Porovnanie z pohľadu časovej náročnosti}
+    \label{fig:time}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{figs/img}
+    \caption{Porovnanie z pohľadu počtu navštívených stavov}
+    \label{fig:size}
+\end{figure}
+Ďalej je vhodné porovnať doprednú kontrolu a spätne prehľadávanie (s MRV, LCV). Je zaujímavé, že kvôli svojej zložitosti algoritmus doprednej kontroly síce stráca na čase, ale rozširuje menej uzlov. Ak sa pozriete na väčší graf~\ref{fig:last}, dopredná kontrola (forward checking) je lepšia aj z hľadiska spotreby času.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{figs/img_2}
+    \caption{Porovnanie doprednej konroly a spetneho prehľadávania z pohľadu časovej náročnosti}
+    \label{fig:last}
 \end{figure}
